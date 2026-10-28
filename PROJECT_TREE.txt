@@ -1,0 +1,58 @@
+finai/
+├── android/                 # Android host/native integration folders
+├── ios/                     # iOS host folders
+├── web/                     # Web target
+├── windows/                 # Windows target
+├── macos/                   # macOS target
+├── linux/                   # Linux target
+├── assets/
+│   ├── images/
+│   ├── icons/
+│   └── fonts/
+├── docs/
+│   ├── architecture/
+│   └── diagrams/
+├── test/
+│   ├── unit/
+│   └── widget/
+├── integration_test/
+├── .github/
+│   └── workflows/
+└── lib/
+    ├── app/
+    │   ├── router/
+    │   └── theme/
+    ├── core/
+    │   ├── database/
+    │   ├── constants/
+    │   ├── errors/
+    │   ├── utils/
+    │   ├── widgets/
+    │   └── platform/
+    └── features/
+        ├── dashboard/
+        │   ├── presentation/{screens,widgets,providers}/
+        │   ├── domain/{entities,repositories,usecases}/
+        │   └── data/{models,datasources,repositories}/
+        ├── jars/
+        │   ├── presentation/{screens,widgets,providers}/
+        │   ├── domain/{entities,repositories,usecases}/
+        │   └── data/{models,datasources,repositories}/
+        ├── assistant/
+        │   ├── presentation/{screens,widgets,providers}/
+        │   ├── domain/{entities,repositories,usecases}/
+        │   └── data/{models,datasources,repositories}/
+        ├── schedule/
+        │   ├── presentation/{screens,widgets,providers}/
+        │   ├── domain/{entities,repositories,usecases}/
+        │   └── data/{models,datasources,repositories}/
+        └── explore/
+            └── presentation/{screens,widgets,providers}/
+
+LƯU Ý:
+- Gói này chỉ chứa thư mục; không có file Dart, file cấu hình hay code.
+- Cấu trúc thư mục trống này chưa thể chạy/biên dịch Flutter.
+- Để tạo project Flutter chạy được, hãy chạy `flutter create .` trong thư mục gốc
+  của một thư mục dự án đã được khởi tạo đúng, rồi bổ sung cấu trúc `lib/` theo thiết kế.
+- Không cần thêm module chưa nằm trong 5 màn hình hiện tại; các module nghiệp vụ khác
+  có thể được bổ sung sau.
