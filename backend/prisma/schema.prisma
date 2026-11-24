@@ -1,0 +1,142 @@
+// Schema thử nghiệm TV3, chưa phải schema chung của nhóm.
+// Các CHECK cho tên và khoảng thời gian nằm trong migration SQL.
+generator client {
+  provider               = "prisma-client"
+  output                 = "../src/generated/prisma"
+  moduleFormat           = "esm"
+  generatedFileExtension = "ts"
+  importFileExtension    = "js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum TaskPriority {
+  low
+  medium
+  high
+}
+
+enum TaskStatus {
+  pending
+  inProgress
+  completed
+}
+
+model Task {
+  id          String       @id @default(uuid())
+  title       String
+  description String?
+  categoryId  String?      @map("category_id")
+  startAt     DateTime     @map("start_at") @db.Timestamptz(3)
+  endAt       DateTime     @map("end_at") @db.Timestamptz(3)
+  priority    TaskPriority @default(medium)
+  status      TaskStatus   @default(pending)
+  version     Int          @default(1)
+  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@index([startAt, id], map: "tasks_start_at_id_idx")
+  @@index([endAt], map: "tasks_end_at_idx")
+  @@map("tasks")
+}
+
+// Intentionally no FK: the Task row is removed in the same transaction.
+model TaskTombstone {
+  taskId    String   @id @map("task_id")
+  version   Int
+  deletedAt DateTime @default(dbgenerated("CURRENT_TIMESTAMP")) @map("deleted_at") @db.Timestamptz(3)
+
+  @@map("task_tombstones")
+}
+
+model FinanceBook {
+  id             String               @id @db.Uuid
+  openingBalance BigInt               @default(0) @map("opening_balance_vnd")
+  budget         BigInt               @default(0) @map("budget_vnd")
+  revision       Int                  @default(0)
+  isDemo         Boolean              @default(false) @map("is_demo")
+  createdAt      DateTime             @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime             @updatedAt @map("updated_at") @db.Timestamptz(3)
+  jars           FinanceJar[]
+  transactions   FinanceTransaction[]
+  allocations    FinanceAllocation[]
+  requests       FinanceRequest[]
+
+  @@map("finance_books")
+}
+
+model FinanceJar {
+  id              String                  @id @default(uuid()) @db.Uuid
+  bookId          String                  @map("book_id") @db.Uuid
+  book            FinanceBook             @relation(fields: [bookId], references: [id], onDelete: Restrict)
+  defaultCode     String?                 @map("default_code")
+  title           String
+  normalizedTitle String                  @map("normalized_title")
+  subtitle        String                  @default("")
+  styleKey        String                  @map("style_key")
+  allocationBps   Int                     @default(0) @map("allocation_bps")
+  deletedAt       DateTime?               @map("deleted_at") @db.Timestamptz(3)
+  createdAt       DateTime                @default(now()) @map("created_at") @db.Timestamptz(3)
+  transactions    FinanceTransaction[]
+  items           FinanceAllocationItem[]
+
+  @@unique([bookId, defaultCode])
+  @@index([bookId])
+  @@map("finance_jars")
+}
+
+model FinanceTransaction {
+  id         String      @id @default(uuid()) @db.Uuid
+  bookId     String      @map("book_id") @db.Uuid
+  book       FinanceBook @relation(fields: [bookId], references: [id], onDelete: Restrict)
+  jarId      String?     @map("jar_id") @db.Uuid
+  jar        FinanceJar? @relation(fields: [jarId], references: [id], onDelete: Restrict)
+  title      String
+  amount     BigInt      @map("amount_vnd")
+  category   String
+  occurredAt DateTime    @map("occurred_at") @db.Timestamptz(3)
+  note       String?
+  createdAt  DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@index([bookId, occurredAt, id])
+  @@map("finance_transactions")
+}
+
+model FinanceAllocation {
+  id        String                  @id @default(uuid()) @db.Uuid
+  bookId    String                  @map("book_id") @db.Uuid
+  book      FinanceBook             @relation(fields: [bookId], references: [id], onDelete: Restrict)
+  amount    BigInt                  @map("amount_vnd")
+  createdAt DateTime                @default(now()) @map("created_at") @db.Timestamptz(3)
+  items     FinanceAllocationItem[]
+
+  @@index([bookId, createdAt, id])
+  @@map("finance_allocations")
+}
+
+model FinanceAllocationItem {
+  allocationId String            @map("allocation_id") @db.Uuid
+  allocation   FinanceAllocation @relation(fields: [allocationId], references: [id], onDelete: Restrict)
+  jarId        String            @map("jar_id") @db.Uuid
+  jar          FinanceJar        @relation(fields: [jarId], references: [id], onDelete: Restrict)
+  amount       BigInt            @map("amount_vnd")
+  ratioBps     Int               @map("ratio_bps")
+
+  @@id([allocationId, jarId])
+  @@map("finance_allocation_items")
+}
+
+model FinanceRequest {
+  bookId    String      @map("book_id") @db.Uuid
+  book      FinanceBook @relation(fields: [bookId], references: [id], onDelete: Restrict)
+  key       String      @map("request_key")
+  operation String
+  hash      String      @map("payload_hash")
+  response  Json
+  createdAt DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@id([bookId, key])
+  @@map("finance_requests")
+}

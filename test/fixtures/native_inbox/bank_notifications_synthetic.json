@@ -1,0 +1,34 @@
+{
+  "provenance": "synthetic_only_not_verified_bank_notifications",
+  "cases": [
+    {
+      "name": "income_vnd",
+      "text": "TK **** +1,250,000 VND 12/11/2026 15:30:05\nSố dư: 2,500,000 VND\nND: Thu nghiem",
+      "status": "parsed",
+      "amountVnd": 1250000,
+      "direction": "income"
+    },
+    {
+      "name": "expense_vnd",
+      "text": "TK **** -250.000 VNĐ. SD: 1.000.000 VNĐ",
+      "status": "parsed",
+      "amountVnd": 250000,
+      "direction": "expense"
+    },
+    {
+      "name": "otp_excluded",
+      "text": "OTP 000000 cho giao dich -250.000 VND",
+      "status": "ignored"
+    },
+    {
+      "name": "advert_excluded",
+      "text": "Ưu đãi voucher 500.000 VND",
+      "status": "ignored"
+    },
+    {
+      "name": "ambiguous",
+      "text": "+500.000 VND và -200.000 VND",
+      "status": "unrecognized"
+    }
+  ]
+}

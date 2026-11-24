@@ -1,0 +1,15 @@
+{
+  "provenance": "structure_from_user_screenshot_all_sensitive_values_replaced_not_yet_device_verified",
+  "appLabel": "TPBank Mobile",
+  "packageName": "com.tpb.mb.gprsandroid",
+  "bankId": "tpb",
+  "title": "(TPBank): 12/11/26;15:47",
+  "text": "TK: xxxx0000\nPS:-75.000VND\nSD: 9.000.000VND\nSD KHA DUNG: 8.500.000VND\nND: NOI DUNG THU NGHIEM - [PHONE] -\n[ACCOUNT]\nSO GD: [REFERENCE]",
+  "expected": {
+    "amountVnd": 75000,
+    "direction": "expense",
+    "balanceVnd": 9000000,
+    "availableBalanceVnd": 8500000,
+    "transactionAtUtc": "2026-11-12T08:47:00.000Z"
+  }
+}
